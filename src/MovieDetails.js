@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { KEY } from "./App";
 import Loader from "./Loader";
 import StarRating from "./StarRating";
@@ -12,6 +12,8 @@ export default function MovieDetails({
   const [movie, setMovie] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [userRating, setUserRating] = useState({});
+
+  const countRef = useRef(0);
 
   const isWatched = watched.map((movie) => movie.imdbID).includes(selectedId);
   const watchedUserRating = watched.find(
@@ -40,6 +42,7 @@ export default function MovieDetails({
       imdbRating: Number(imdbRating),
       runtime: Number(runtime.split(" ").at(0)),
       userRating,
+      countRatingDecisions: countRef.current,
     };
 
     onAddWatched(newWatchedMovie);
@@ -121,7 +124,10 @@ export default function MovieDetails({
                   <StarRating
                     maxRating={10}
                     size={24}
-                    onSetRating={setUserRating}
+                    onSetRating={(rating) => {
+                      setUserRating(rating);
+                      countRef.current++;
+                    }}
                   />
                   {userRating > 0 && (
                     <button className="btn-add" onClick={handleAdd}>
